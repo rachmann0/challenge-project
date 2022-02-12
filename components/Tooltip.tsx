@@ -42,7 +42,7 @@ const Tooltip = ({ handleDelete, handleEdit }: TooltipProps) => {
         <path d='M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z' />
       </svg>
       <div
-        className={`text-sm flex flex-col items-start bg-white p-3 shadow-lg rounded ${
+        className={`dark:bg-slate-500 dark:text-white text-sm flex flex-col items-start bg-white p-3 shadow-lg rounded ${
           isOpen ? '' : 'hidden'
         }`}
         ref={setPopperElement}

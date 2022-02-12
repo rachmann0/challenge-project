@@ -135,10 +135,10 @@ const Home = () => {
       >
         {(context) => (
           <>
-            <Form className='shadow-lg flex flex-col justify-center items-start max-w-md w-full bg-white dark:bg-slate-700 font-semibold p-3 rounded-lg my-3'>
+            <Form className='shadow-lg flex flex-col justify-center items-start max-w-md w-full bg-white dark:bg-slate-700 dark:text-gray-200 font-semibold p-3 rounded-lg my-3'>
               <label htmlFor='name'>Name</label>
               <Field
-                className='w-full p-1'
+                className='w-full p-1 dark:bg-slate-500 rounded'
                 id='name'
                 name='name'
                 type='text'
@@ -149,7 +149,7 @@ const Home = () => {
               </p>
               <label htmlFor='email'>E-Mail</label>
               <Field
-                className='w-full p-1'
+                className='w-full p-1 dark:bg-slate-500 rounded'
                 id='email'
                 name='email'
                 type='text'
@@ -160,7 +160,7 @@ const Home = () => {
               </p>
               <label htmlFor='birthdate'>Birthdate</label>
               <DatePicker
-                className='w-full p-1'
+                className='w-full p-1 dark:bg-slate-500 rounded'
                 selected={context.values.birthdate}
                 onChange={(date: Date) => {
                   context.setFieldValue('birthdate', date);
@@ -173,7 +173,7 @@ const Home = () => {
               <div className='flex justify-between w-full'>
                 <button
                   type='button'
-                  className='btn btn-red uppercase w-full mx-1'
+                  className='btn btn-red uppercase w-full mx-1 dark:bg-red-700'
                   onClick={() => {
                     // context.setErrors({});
                     if (!editMode.isEditMode) {
@@ -187,7 +187,7 @@ const Home = () => {
                 </button>
                 <button
                   type='submit'
-                  className='btn btn-blue uppercase w-full mx-1'
+                  className='btn btn-blue uppercase w-full mx-1  dark:bg-blue-700'
                 >
                   {editMode.isEditMode ? 'confirm edit' : 'add new user'}
                 </button>
@@ -202,10 +202,10 @@ const Home = () => {
               {(el, key) => (
                 <div
                   key={key}
-                  className={`rounded p-3 my-2 w-full flex justify-between ${
+                  className={`dark:text-gray-200 rounded p-3 my-2 w-full flex justify-between ${
                     el.id === editMode.initialValues.id
-                      ? 'bg-gray-300'
-                      : 'bg-white shadow-lg'
+                      ? 'bg-gray-300 dark:bg-slate-600'
+                      : 'bg-white shadow-lg dark:bg-slate-700 '
                   }`}
                 >
                   <div className='flex flex-col'>
