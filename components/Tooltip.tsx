@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { usePopper } from 'react-popper';
 
 type TooltipProps = {
   // handleDetails: () => any;
-  // handleEdit: () => any;
+  handleEdit: () => any;
   handleDelete: () => any;
 };
 
 // const Tooltip = ({ handleDetails, handleEdit, handleDelete }: TooltipProps) => {
-const Tooltip = ({ handleDelete }: TooltipProps) => {
+const Tooltip = ({ handleDelete, handleEdit }: TooltipProps) => {
   const [referenceElement, setReferenceElement] =
     useState<SVGSVGElement | null>(null);
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(
@@ -16,9 +16,13 @@ const Tooltip = ({ handleDelete }: TooltipProps) => {
   );
   const [arrowElement, setArrowElement] = useState<HTMLDivElement | null>(null);
 
-  const { styles, attributes } = usePopper(referenceElement, popperElement, {
-    modifiers: [{ name: 'arrow', options: { element: arrowElement } }],
-  });
+  const { styles, attributes, update } = usePopper(
+    referenceElement,
+    popperElement,
+    {
+      modifiers: [{ name: 'arrow', options: { element: arrowElement } }],
+    }
+  );
 
   const [isOpen, setisOpen] = useState(false);
 
@@ -26,7 +30,10 @@ const Tooltip = ({ handleDelete }: TooltipProps) => {
     <>
       <svg
         ref={setReferenceElement}
-        onClick={() => setisOpen(!isOpen)}
+        onClick={() => {
+          update!();
+          setisOpen(!isOpen);
+        }}
         className='w-6 h-6 cursor-pointer'
         data-darkreader-inline-fill=''
         fill='currentColor'
@@ -42,9 +49,27 @@ const Tooltip = ({ handleDelete }: TooltipProps) => {
         style={styles.popper}
         {...attributes.popper}
       >
-        {/* <button onClick={handleDetails}>Details</button>
-        <button onClick={handleEdit}>Edit</button> */}
-        <button onClick={handleDelete}>Delete</button>
+        {/* <button className='m-1' onClick={handleDetails}>
+          Details
+        </button> */}
+        <button
+          className='m-1'
+          onClick={() => {
+            handleEdit();
+            setisOpen(false);
+          }}
+        >
+          Edit
+        </button>
+        <button
+          className='m-1'
+          onClick={() => {
+            handleDelete();
+            setisOpen(false);
+          }}
+        >
+          Delete
+        </button>
         <div ref={setArrowElement} style={styles.arrow} />
       </div>
     </>
