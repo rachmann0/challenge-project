@@ -1,5 +1,14 @@
 // ? firebase
-import { collection, query, orderBy, onSnapshot } from '@firebase/firestore';
+import {
+  deleteDoc,
+  doc,
+  collection,
+  query,
+  orderBy,
+  onSnapshot,
+  serverTimestamp,
+  addDoc,
+} from '@firebase/firestore';
 import { db } from '../firebase';
 // ? react
 import { useState, useEffect } from 'react';
@@ -9,6 +18,8 @@ import ListPagination from '../components/ListPagination';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as yup from 'yup';
 import DarkModeToggle from '../components/DarkModeToggle';
+import { usePopper } from 'react-popper';
+import Tooltip from '../components/Tooltip';
 
 type UserData = {
   id: string;
@@ -18,6 +29,8 @@ type UserData = {
 };
 
 const Home = () => {
+  usePopper();
+
   const [userData, setuserData] = useState<UserData[]>([]);
   useEffect(() => {
     const collectionRef = collection(db, 'users');
@@ -39,7 +52,7 @@ const Home = () => {
   }, []);
 
   return (
-    <div className='w-screen min-h-screen bg-gradient-to-tr from-blue-300 via-cyan-300 to-blue-300 dark:from-slate-800 dark:via-blue-900 dark:to-slate-800 p-5 flex flex-col justify-start items-center text-slate-800 md:p-3 pt-12'>
+    <div className='w-screen min-h-screen bg-gradient-to-tr bg-blue-300 dark:from-slate-800 dark:to-slate-800 p-5 flex flex-col justify-start items-center text-slate-800'>
       <DarkModeToggle />
       <Formik
         initialValues={{
@@ -47,8 +60,22 @@ const Home = () => {
           email: '',
           birthdate: '',
         }}
-        onSubmit={(values) => {
-          console.log(values);
+        onSubmit={async (values, { resetForm }) => {
+          const collectionRef = collection(db, 'users');
+          let docRef;
+          try {
+            docRef = await addDoc(collectionRef, {
+              ...values,
+              birthdate: serverTimestamp(),
+            });
+            alert(
+              `new user with name '${values.name}' and id '${docRef.id}' added successfully`
+            );
+          } catch (error) {
+            alert(`failed to add new user with name '${values.name}'`);
+          } finally {
+            resetForm();
+          }
         }}
         validateOnBlur={false}
         validateOnChange={false}
@@ -63,7 +90,7 @@ const Home = () => {
         })}
       >
         {(context) => (
-          <Form className='shadow-lg flex flex-col justify-center items-start max-w-md w-full bg-white dark:bg-slate-700 dark:text-white font-semibold p-3 rounded-lg'>
+          <Form className='shadow-lg flex flex-col justify-center items-start max-w-md w-full bg-white dark:bg-slate-700 font-semibold p-3 rounded-lg'>
             <label htmlFor='name'>Name</label>
             <Field
               className='w-full'
@@ -101,8 +128,8 @@ const Home = () => {
                 type='button'
                 className='btn btn-red uppercase w-full mx-1'
                 onClick={() => {
-                  context.setErrors({});
-                  context.resetForm();
+                  // context.setErrors({});
+                  context.resetForm(); // reset errors handled by resetForm
                 }}
               >
                 clear form
@@ -119,25 +146,43 @@ const Home = () => {
       </Formik>
 
       <ListPagination
-        className='flex justify-center items-center max-w-lg w-full'
+        className='flex flex-col justify-center items-center max-w-lg w-full'
         data={userData}
         getKey={(el) => el.id}
       >
         {(el, key) => (
-          <div key={key} className='shadow-lg bg-white rounded p-3 my-2 w-full'>
-            <div>
-              <span className='text-base font-bold capitalize'>name: </span>
-              {el.name}
+          <div
+            key={key}
+            className='shadow-lg bg-white rounded p-3 my-2 w-full flex justify-between'
+          >
+            <div className='flex flex-col'>
+              <div>
+                <span className='text-base font-bold capitalize'>name: </span>
+                {el.name}
+              </div>
+              <div>
+                <span className='text-base font-bold capitalize'>email: </span>
+                {el.email}
+              </div>
+              <div>
+                <span className='text-base font-bold capitalize'>
+                  birthdate:{' '}
+                </span>
+                {el.birthdate}
+              </div>
             </div>
-            <div>
-              <span className='text-base font-bold capitalize'>email: </span>
-              {el.email}
-            </div>
-            <div>
-              <span className='text-base font-bold capitalize'>
-                birthdate:{' '}
-              </span>
-              {el.birthdate}
+            <div className='self-center'>
+              <Tooltip
+                handleDelete={async () => {
+                  const docRef = doc(db, 'users', el.id);
+                  try {
+                    await deleteDoc(docRef);
+                    alert(`successfully deleted user with id '${el.id}'`);
+                  } catch (error) {
+                    alert(`failed to delete user with id '${el.id}'`);
+                  }
+                }}
+              />
             </div>
           </div>
         )}
