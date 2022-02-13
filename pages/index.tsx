@@ -82,9 +82,13 @@ const Home = () => {
               ...values,
               birthdate: Timestamp.fromDate(values.birthdate),
             });
-            toast.success(`successfully updated user with id '${values.id}'`);
+            toast.success(`successfully updated user with id '${values.id}'`, {
+              autoClose: 2000,
+            });
           } catch (error) {
-            toast.error(`failed to updated user with id '${values.id}'`);
+            toast.error(`failed to updated user with id '${values.id}'`, {
+              autoClose: 2000,
+            });
           } finally {
             seteditMode({
               isEditMode: false,
@@ -102,10 +106,15 @@ const Home = () => {
             birthdate: Timestamp.fromDate(values.birthdate),
           });
           toast.success(
-            `new user with name '${values.name}' and id '${docRef.id}' added successfully`
+            `new user with name '${values.name}' and id '${docRef.id}' added successfully`,
+            {
+              autoClose: 2000,
+            }
           );
         } catch (error) {
-          toast.error(`failed to add new user with name '${values.name}'`);
+          toast.error(`failed to add new user with name '${values.name}'`, {
+            autoClose: 2000,
+          });
         } finally {
           seteditMode({
             isEditMode: false,
@@ -231,10 +240,18 @@ const Home = () => {
                       try {
                         await deleteDoc(docRef);
                         toast.success(
-                          `successfully deleted user with id '${el.id}'`
+                          `successfully deleted user with id '${el.id}'`,
+                          {
+                            autoClose: 2000,
+                          }
                         );
                       } catch (error) {
-                        toast.error(`failed to delete user with id '${el.id}'`);
+                        toast.error(
+                          `failed to delete user with id '${el.id}'`,
+                          {
+                            autoClose: 2000,
+                          }
+                        );
                       }
                     }}
                     handleEdit={async () => {
