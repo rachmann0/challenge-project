@@ -16,7 +16,6 @@ import { db } from '../firebase';
 import { useState, useEffect } from 'react';
 // ? next
 import { useRouter } from 'next/router';
-import { GetServerSideProps } from 'next';
 // ? components
 import ListPagination from '../components/ListPagination';
 // ? forms
