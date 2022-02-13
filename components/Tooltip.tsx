@@ -2,13 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { usePopper } from 'react-popper';
 
 type TooltipProps = {
-  // handleDetails: () => any;
+  handleDetails: () => any;
   handleEdit: () => any;
   handleDelete: () => any;
 };
 
-// const Tooltip = ({ handleDetails, handleEdit, handleDelete }: TooltipProps) => {
-const Tooltip = ({ handleDelete, handleEdit }: TooltipProps) => {
+const Tooltip = ({ handleDetails, handleEdit, handleDelete }: TooltipProps) => {
   const [referenceElement, setReferenceElement] =
     useState<SVGSVGElement | null>(null);
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(
@@ -49,9 +48,15 @@ const Tooltip = ({ handleDelete, handleEdit }: TooltipProps) => {
         style={styles.popper}
         {...attributes.popper}
       >
-        {/* <button className='m-1' onClick={handleDetails}>
+        <button
+          className='m-1'
+          onClick={() => {
+            handleDetails();
+            setisOpen(false);
+          }}
+        >
           Details
-        </button> */}
+        </button>
         <button
           className='m-1'
           onClick={() => {
