@@ -6,12 +6,12 @@ import { db } from '../firebase';
 import { SpinnerContext } from './_app';
 import { useRouter } from 'next/router';
 
-type PageProps = {
+type PagePropsType = {
   userData: string;
   notFound: boolean;
 };
 
-export default function UserDetails({ userData }: PageProps) {
+export default function UserDetails({ userData }: PagePropsType) {
   const setisSpinner = useContext(SpinnerContext);
   const router = useRouter();
 
@@ -60,14 +60,14 @@ export default function UserDetails({ userData }: PageProps) {
   );
 }
 
-export const getServerSideProps: GetServerSideProps<PageProps> = async (
+export const getServerSideProps: GetServerSideProps<PagePropsType> = async (
   context
 ) => {
   const id: string = context.query.userId as string;
 
   const docRef = doc(db, 'users', id);
   const docSnap = await getDoc(docRef);
-  const data: PageProps = {
+  const data: PagePropsType = {
     userData: JSON.stringify({
       ...docSnap.data(),
       birthdate: docSnap.data()?.birthdate.toDate(),

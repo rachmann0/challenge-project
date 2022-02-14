@@ -1,5 +1,6 @@
 // ? firebase
 import {
+  getDocs,
   Timestamp,
   deleteDoc,
   updateDoc,
@@ -15,6 +16,7 @@ import { db } from '../firebase';
 // ? react
 import { useState, useEffect, useContext } from 'react';
 // ? next
+import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 // ? components
 import ListPagination from '../components/ListPagination';
@@ -34,7 +36,12 @@ export type UserData = {
   birthdate: Date;
 };
 
-const Home = () => {
+type PageProps = {
+  // users: UserData[];
+  usersData: string;
+};
+
+const Home = ({ usersData }: PageProps) => {
   const setisSpinner = useContext(SpinnerContext);
   const router = useRouter();
 
@@ -50,27 +57,18 @@ const Home = () => {
     initialValues,
   });
 
-  const [userData, setuserData] = useState<UserData[]>([]);
+  const refreshData = () => {
+    router.replace(router.asPath);
+  };
+
+  const [users, setusers] = useState<UserData[]>([]);
   useEffect(() => {
-    setisSpinner(true);
-    const collectionRef = collection(db, 'users');
-    const q = query(collectionRef, orderBy('name', 'asc'));
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      setisSpinner(false);
-      setuserData(
-        querySnapshot.docs.map(
-          (el): UserData => ({
-            id: el.id,
-            name: el.data().name,
-            email: el.data().email,
-            // birthdate: el.data().birthdate?.toDate().getTime(),
-            birthdate: el.data().birthdate?.toDate(),
-          })
-        )
-      );
-    });
-    return unsubscribe;
-  }, [setisSpinner]);
+    setusers(
+      JSON.parse(usersData).map((el: any) => {
+        return { ...el, birthdate: new Date(el.birthdate) };
+      })
+    );
+  }, [setisSpinner, setusers, usersData]);
 
   return (
     <Formik
@@ -95,6 +93,7 @@ const Home = () => {
             });
           } finally {
             setisSpinner(false);
+            refreshData();
             seteditMode({
               isEditMode: false,
               initialValues,
@@ -122,6 +121,7 @@ const Home = () => {
           });
         } finally {
           setisSpinner(false);
+          refreshData();
           seteditMode({
             isEditMode: false,
             initialValues,
@@ -130,14 +130,9 @@ const Home = () => {
       }}
       validateOnBlur={false}
       validateOnChange={false}
-      // validate={(values) => {
-      //   const errors: { [name: string]: any } = {};
-      //   return errors;
-      // }}
       validationSchema={yup.object({
         name: yup.string().required().min(3),
         email: yup.string().required().email('must be a valid email'),
-        // birthdate: yup.string().required(),
         birthdate: yup
           .date()
           .required()
@@ -207,7 +202,7 @@ const Home = () => {
 
           <ListPagination
             className='flex flex-col justify-center items-center max-w-lg w-full'
-            data={userData}
+            data={users}
             getKey={(el) => el.id}
           >
             {(el, key) => (
@@ -261,6 +256,7 @@ const Home = () => {
                         );
                       } finally {
                         setisSpinner(false);
+                        refreshData();
                       }
                     }}
                     handleEdit={async () => {
@@ -282,3 +278,26 @@ const Home = () => {
 };
 
 export default Home;
+
+export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
+  const collectionRef = collection(db, 'users');
+  const q = query(collectionRef, orderBy('name', 'asc'));
+  const querySnapshot = await getDocs(q);
+  const users: UserData[] = [];
+  querySnapshot.forEach((el) =>
+    users.push({
+      id: el.id,
+      name: el.data().name,
+      email: el.data().email,
+      birthdate: el.data().birthdate?.toDate(),
+    })
+  );
+
+  const data: PageProps = { usersData: JSON.stringify(users) };
+
+  return {
+    props: {
+      ...data,
+    },
+  };
+};
