@@ -26,7 +26,10 @@ export default function UserDetails({ userData }: PageProps) {
   return (
     <div className='dark:text-gray-200 dark:bg-slate-700 bg-white rounded-lg my-5 p-3 flex flex-col w-96 fixed'>
       <svg
-        onClick={router.back}
+        onClick={() => {
+          setisSpinner(true);
+          router.back();
+        }}
         className='w-6 h-6 absolute top-0 left-0 m-4 cursor-pointer'
         data-darkreader-inline-fill=''
         fill='currentColor'
