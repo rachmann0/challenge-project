@@ -24,7 +24,7 @@ export default function UserDetails({ userData }: PagePropsType) {
   }, [setisSpinner]);
 
   return (
-    <div className='dark:text-gray-200 dark:bg-slate-700 bg-white rounded-lg my-5 p-3 flex flex-col w-96 fixed'>
+    <div className='dark:text-gray-200 dark:bg-slate-700 bg-white rounded-lg my-10 p-3 flex flex-col fixed sm:w-96'>
       <svg
         onClick={() => {
           setisSpinner(true);

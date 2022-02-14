@@ -12,6 +12,7 @@ import {
   // serverTimestamp,
   addDoc,
 } from '@firebase/firestore';
+import swal from 'sweetalert';
 import { db } from '../firebase';
 // ? react
 import { useState, useEffect, useContext } from 'react';
@@ -142,7 +143,7 @@ const Home = ({ usersData }: PageProps) => {
     >
       {(context) => (
         <>
-          <Form className='shadow-lg flex flex-col justify-center items-start max-w-md w-full bg-white dark:bg-slate-700 dark:text-gray-200 font-semibold p-3 rounded-lg my-5'>
+          <Form className='shadow-lg flex flex-col justify-center items-start max-w-md w-full bg-white dark:bg-slate-700 dark:text-gray-200 font-semibold p-3 rounded-lg my-10'>
             <label htmlFor='name'>Name</label>
             <Field
               className='w-full p-1 dark:bg-slate-500 rounded'
@@ -180,7 +181,7 @@ const Home = ({ usersData }: PageProps) => {
             <div className='flex justify-between w-full'>
               <button
                 type='button'
-                className='btn btn-red uppercase w-full mx-1 dark:bg-red-700'
+                className='btn btn-red uppercase w-full mx-1 dark:bg-red-700 text-sm sm:text-base'
                 onClick={() => {
                   // context.setErrors({});
                   if (!editMode.isEditMode) {
@@ -194,7 +195,7 @@ const Home = ({ usersData }: PageProps) => {
               </button>
               <button
                 type='submit'
-                className='btn btn-blue uppercase w-full mx-1  dark:bg-blue-700'
+                className='btn btn-blue uppercase w-full mx-1  dark:bg-blue-700 text-sm sm:text-base'
               >
                 {editMode.isEditMode ? 'confirm edit' : 'add new user'}
               </button>
@@ -238,6 +239,16 @@ const Home = ({ usersData }: PageProps) => {
                 <div className='self-center'>
                   <Tooltip
                     handleDelete={async () => {
+                      // if (!confirm(`delete user with id '${el.id}'`)) return;
+                      if (
+                        (await swal(`delete user with id '${el.id}'`, {
+                          title: 'Are you sure?',
+                          icon: 'warning',
+                          buttons: ['cancel', 'confirm'],
+                        })) === null
+                      )
+                        return;
+
                       setisSpinner(true);
                       const docRef = doc(db, 'users', el.id);
                       try {

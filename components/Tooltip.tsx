@@ -19,6 +19,7 @@ const Tooltip = ({ handleDetails, handleEdit, handleDelete }: TooltipProps) => {
     referenceElement,
     popperElement,
     {
+      placement: 'left-start',
       modifiers: [{ name: 'arrow', options: { element: arrowElement } }],
     }
   );
