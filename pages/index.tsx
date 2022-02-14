@@ -13,7 +13,7 @@ import {
 } from '@firebase/firestore';
 import { db } from '../firebase';
 // ? react
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 // ? next
 import { useRouter } from 'next/router';
 // ? components
@@ -25,6 +25,7 @@ import * as yup from 'yup';
 import Tooltip from '../components/Tooltip';
 import DatePicker from 'react-datepicker';
 import { toast } from 'react-toastify';
+import { SpinnerContext } from './_app';
 
 export type UserData = {
   id: string;
@@ -34,6 +35,7 @@ export type UserData = {
 };
 
 const Home = () => {
+  const setisSpinner = useContext(SpinnerContext);
   const router = useRouter();
 
   const initialValues = {
@@ -50,9 +52,11 @@ const Home = () => {
 
   const [userData, setuserData] = useState<UserData[]>([]);
   useEffect(() => {
+    setisSpinner(true);
     const collectionRef = collection(db, 'users');
     const q = query(collectionRef, orderBy('name', 'asc'));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      setisSpinner(false);
       setuserData(
         querySnapshot.docs.map(
           (el): UserData => ({
@@ -66,13 +70,14 @@ const Home = () => {
       );
     });
     return unsubscribe;
-  }, []);
+  }, [setisSpinner]);
 
   return (
     <Formik
       enableReinitialize // reinitialize also resets errors. no need to 'resetForm'
       initialValues={editMode.initialValues}
       onSubmit={async (values, { resetForm }) => {
+        setisSpinner(true);
         // ! update
         if (editMode.isEditMode) {
           const docRef = doc(db, 'users', values.id);
@@ -89,6 +94,7 @@ const Home = () => {
               autoClose: 2000,
             });
           } finally {
+            setisSpinner(false);
             seteditMode({
               isEditMode: false,
               initialValues,
@@ -115,6 +121,7 @@ const Home = () => {
             autoClose: 2000,
           });
         } finally {
+          setisSpinner(false);
           seteditMode({
             isEditMode: false,
             initialValues,
@@ -235,6 +242,7 @@ const Home = () => {
                 <div className='self-center'>
                   <Tooltip
                     handleDelete={async () => {
+                      setisSpinner(true);
                       const docRef = doc(db, 'users', el.id);
                       try {
                         await deleteDoc(docRef);
@@ -251,12 +259,17 @@ const Home = () => {
                             autoClose: 2000,
                           }
                         );
+                      } finally {
+                        setisSpinner(false);
                       }
                     }}
                     handleEdit={async () => {
                       seteditMode({ isEditMode: true, initialValues: el });
                     }}
-                    handleDetails={() => router.push(`/${el.id}`)}
+                    handleDetails={() => {
+                      setisSpinner(true);
+                      router.push(`/${el.id}`);
+                    }}
                   />
                 </div>
               </div>
