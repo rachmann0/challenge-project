@@ -62,6 +62,7 @@ const Home = ({ usersData }: PageProps) => {
   };
 
   const [users, setusers] = useState<UserData[]>([]);
+  useEffect(() => setisSpinner(false), [users, setisSpinner]);
   useEffect(() => {
     setusers(
       JSON.parse(usersData).map((el: any) => {
@@ -92,7 +93,7 @@ const Home = ({ usersData }: PageProps) => {
               autoClose: 2000,
             });
           } finally {
-            setisSpinner(false);
+            // setisSpinner(false);
             refreshData();
             seteditMode({
               isEditMode: false,
@@ -120,7 +121,7 @@ const Home = ({ usersData }: PageProps) => {
             autoClose: 2000,
           });
         } finally {
-          setisSpinner(false);
+          // setisSpinner(false);
           refreshData();
           seteditMode({
             isEditMode: false,
@@ -255,7 +256,7 @@ const Home = ({ usersData }: PageProps) => {
                           }
                         );
                       } finally {
-                        setisSpinner(false);
+                        // setisSpinner(false);
                         refreshData();
                       }
                     }}
