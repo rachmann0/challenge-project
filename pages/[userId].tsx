@@ -4,6 +4,7 @@ import React, { useMemo, useEffect, useContext } from 'react';
 import { UserData } from './index';
 import { db } from '../firebase';
 import { SpinnerContext } from './_app';
+import { useRouter } from 'next/router';
 
 type PageProps = {
   userData: string;
@@ -12,12 +13,12 @@ type PageProps = {
 
 export default function UserDetails({ userData }: PageProps) {
   const setisSpinner = useContext(SpinnerContext);
+  const router = useRouter();
 
   const userDetails: UserData = useMemo(() => {
     const parsedData = JSON.parse(userData);
     return { ...parsedData, birthdate: new Date(parsedData.birthdate) };
   }, [userData]);
-  // const router = useRouter();
   useEffect(() => {
     setisSpinner(false);
   }, [setisSpinner]);
@@ -25,6 +26,7 @@ export default function UserDetails({ userData }: PageProps) {
   return (
     <div className='dark:text-gray-200 dark:bg-slate-700 bg-white rounded-lg my-5 p-3 flex flex-col w-96 fixed'>
       <svg
+        onClick={router.back}
         className='w-6 h-6 absolute top-0 left-0 m-4 cursor-pointer'
         data-darkreader-inline-fill=''
         fill='currentColor'
